@@ -1,0 +1,66 @@
+import boto3
+import csv
+#initialize  and conect to the aws cloud
+
+
+with open('credentials.csv', 'r') as file:
+    next(file)
+    reader = csv.reader(file)
+    for row in reader:
+        print(row)
+        awsaccesskeyid = row[2]
+        awssecret_accesskey = row[3]
+
+
+
+
+#s3 = boto3.client('s3',aws_access_key_id =awsaccesskeyid ,aws_secret_access_key = awssecret_accesskey )
+
+#Rekog
+s3 = boto3.client('rekognition',aws_access_key_id =awsaccesskeyid ,aws_secret_access_key = awssecret_accesskey ,region_name='ap-south-1')
+print("client connected")
+photo = 'number1.jpg'
+with open(photo,'rb') as source_image:
+    source_bytes = source_image.read()
+''''
+#direct upload and check the objects
+response = s3.detect_labels(
+    Image={
+        'Bytes': source_bytes},
+
+    MaxLabels=10,
+    MinConfidence=60
+) '''
+''''
+#image/file from S3
+response = s3.detect_labels(
+    Image={'S3Object': {
+             'Bucket': 'sarantestbucket',
+               'Name': 'images/photo_1.jpg',
+        },
+    },
+
+    MaxLabels=10,
+    MinConfidence=60
+)
+'''
+#detect moderation labels
+response = s3.detect_moderation_labels(
+    Image={'S3Object': {
+             'Bucket': 'sarantestbucket',
+               'Name': 'images/gir_swimshoot.jpg',
+        },
+    })
+
+
+
+print(response)
+'''
+upload_status=s3.upload_file('myphoto1.jpg','sarantestbucket','images/gir_swimshoot.jpg')
+print(upload_status)
+if not upload_status == True:
+    print("Uploaded succesfully")
+
+else:
+    print("check the code") '''
+
